@@ -91,14 +91,44 @@ if percola(matriu):
     matriu_pintada = pintar_cami(matriu,vertex_actius)
     print(matriu_pintada)
 
-#TODO: Graficar percolación en función de las dimensiones de la matriz de 2x2 hasta 10x10 para empezar.
+#Gràfica que mostra el punt crític de percolació en funció de les dimensions de la matriu
+#Per cada probabilitat dins de probabilities generem matrius des de la mida inferior fins
+#la superior (elements dins de matrix_size) i busquem el punt de percolació amb percola.
+#Emmagatzemem el punt de percolació i mostrem els resultats en un gràfic
+
+probabilities = np.arange(0.1, 1.0, 0.01)
+matrix_sizes = range(2, 101) #Mides de matrius que anem a provar
+num_trials = 1000000
+
+# Initialize dictionary to store critical probabilities
+critical_probabilities = {size: None for size in matrix_sizes}
+
+for size in matrix_sizes:
+    for p in probabilities:
+        percolating_trials = 0
+        matrix = matriu_quadrat(size, p)
+        if percola(matrix):
+            percolating_trials += 1
+        if percolating_trials / 1 > 0:  # Percola, afegim el punt
+            critical_probabilities[size] = p
+            break
 
 
+#Regressió polinòmica per veure possibles tendències
+x_values = np.array(list(critical_probabilities.keys()))
+y_values = np.array(list(critical_probabilities.values()))
+regression_coeffs = np.polyfit(x_values, y_values, 2)  # Adjust degree as needed
+regression_line = np.poly1d(regression_coeffs)
+plt.plot(x_values, y_values, marker='o', label='Data')
+plt.plot(x_values, regression_line(x_values), linestyle='--', color='red', label='Regression')
 
 
+plt.plot(matrix_sizes, list(critical_probabilities.values()), marker='o')
+plt.xlabel('Mida de la matriu')
+plt.ylabel('Punt crític de percolació')
+plt.title('Punt crític de percolació en funció de la mida de la matriu')
+plt.grid(True)
+plt.show()
 
-
-
-
-
+#TODO:Ara podria repetir el mateix però amb una geometria hexagonal i després passar a generar fractals
 
